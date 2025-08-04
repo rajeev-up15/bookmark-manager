@@ -1,0 +1,18 @@
+# Ignore dependencies and build artifacts
+node_modules
+build
+.npm
+
+# Ignore local development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore Docker files
+Dockerfile
+.dockerignore
