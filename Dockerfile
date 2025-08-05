@@ -1,32 +1,41 @@
-# Stage 1: Build the React application
-FROM node:18-alpine AS build
+# =============================
+# 1️⃣ Build Stage
+# =============================
+FROM node:20-alpine AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application source code
 COPY . .
 
-# Build the application for production
 RUN npm run build
 
-# Stage 2: Serve the application using Nginx
-FROM nginx:1.23-alpine
+# List contents for debugging (optional, remove in prod)
+RUN echo "Listing /app contents:" && ls -la /app
+RUN echo "Listing /app/build contents:" && ls -la /app/build
 
-# Copy the build output from the build stage
+# =============================
+# 2️⃣ Production Stage
+# =============================
+FROM nginx:alpine
+
+# Install gettext for envsubst (to replace env variables in nginx conf)
+RUN apk add --no-cache gettext
+
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy nginx template config
+COPY nginx.template.conf /etc/nginx/conf.d/nginx.template.conf
+
+# Copy React build output from build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy the nginx config file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Expose port 8080 (Cloud Run default)
+EXPOSE 8080
 
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx when the container launches
+# Replace ${PORT} in template with environment variable and start nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
