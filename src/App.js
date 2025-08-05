@@ -509,7 +509,7 @@ export default function App() {
         </main>
         <footer className="text-center mt-12 text-gray-500 text-sm">
           <p>
-            I have seen the future. It's you, a week from now, frantically
+            I have seen the future. It is you, a week from now, frantically
             trying to remember the name of a website. Save yourself the trouble
             and bookmark it.
           </p>
